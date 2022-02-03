@@ -1,0 +1,108 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
+import pandas as pd
+import sklearn
+from sklearn.model_selection import train_test_split
+from sklearn import preprocessing
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import classification_report
+from sklearn.model_selection import KFold
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import cross_validate
+from sklearn.neural_network import MLPClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn import svm , preprocessing
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import GradientBoostingClassifier
+from xgboost import XGBClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.experimental import enable_hist_gradient_boosting
+from sklearn.ensemble import HistGradientBoostingClassifier
+from lightgbm import LGBMClassifier
+from catboost import CatBoostClassifier
+from sklearn import metrics
+from sklearn.metrics import classification_report
+from sklearn.pipeline import make_pipeline
+import pickle
+from sklearn.metrics import f1_score
+from sklearn.svm import SVC
+
+df = pd.read_csv("5.url_info.csv",index_col=0)
+
+print(type(df))
+#df = sklearn.utils.shuffle(df)
+X = df.drop("Label",axis=1).values
+#print(X.isnull().sum().sort_values(ascending=False))
+print(X)
+print(type(X))
+#X = preprocessing.scale(X)
+y = df['Label'].values
+print(df.head())
+print(X)
+
+
+a_training_data, a_test_data, b_training_data, b_test_data = train_test_split(X, y, test_size = 0.1)
+
+
+print('PRINTING A TRAINING DATA:')
+print(a_training_data.shape)
+print(a_training_data)
+print('PRINTING A TEST DATA:')
+print(a_test_data)
+print(a_test_data.shape)
+print(type(a_test_data))
+
+print('PRINTING B TRAINING DATA:')
+print(b_training_data)
+print(b_training_data.shape)
+print('PRINTING B TEST DATA:')
+print(b_test_data)
+print(b_test_data.shape)
+
+model = DecisionTreeClassifier(criterion="entropy",min_samples_split=2,random_state=1)
+model.fit(a_training_data, b_training_data)
+#print("\n PRINTING X AGAIN")
+#print(X)
+
+predictions = model.predict(a_test_data)
+print(predictions)
+print("\n DECISION TREE CLASSIFIER ACCURACY:")
+print(metrics.accuracy_score(b_test_data,predictions))
+print(f1_score(b_test_data,predictions))
+
+classifier= KNeighborsClassifier(n_neighbors=3)
+classifier.fit(a_training_data, b_training_data)
+y_pred = classifier.predict(a_test_data)
+print("\n KNN CLASSIFIER ACCURACY:")
+print(metrics.accuracy_score(b_test_data,y_pred))
+print("\n F1_SCORE is :")
+print(f1_score(b_test_data,y_pred))
+
+
+
+clf = SVC(kernel='linear')
+clf.fit(a_training_data, b_training_data)
+y_pred = clf.predict(a_test_data)
+print("\n SVM CLASSIFIER ACCURACY:")
+print(metrics.accuracy_score(b_test_data,y_pred))
+print("\n F1_SCORE is :")
+print(f1_score(b_test_data,y_pred))
+
+
+
+# open a file, where you ant to store the data
+file = open('random_forest_regression_model.pkl', 'wb')
+
+# dump information to that file
+pickle.dump(model, file)
+loaded_model = pickle.load(open('random_forest_regression_model.pkl', 'rb'))
+result = loaded_model.score(a_test_data,b_test_data)
+print("\n result is :")
+print(result)
